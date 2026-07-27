@@ -1,0 +1,67 @@
+package com.example.coworking.config;
+
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.coworking.security.JWTUtil;
+import com.example.coworking.security.UserEntityDetails;
+import com.example.coworking.service.UserEntityDetailsService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
+@Component
+public class JWTFilter extends OncePerRequestFilter {
+    private final UserEntityDetailsService userEntityDetailsService;
+    private final JWTUtil jwtUtil;
+
+    public JWTFilter(UserEntityDetailsService userEntityDetailsService, JWTUtil jwtUtil) {
+        this.userEntityDetailsService = userEntityDetailsService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String authHeader=request.getHeader("Authorization");
+
+        if(authHeader!=null && authHeader.startsWith("Bearer ")){
+            String jwt=authHeader.substring(7);
+
+            if (jwt.isBlank()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Invalid JWT Token");
+                return;
+            }
+
+            try {
+                String username = jwtUtil.validateTokenAndRetrieveClaim(jwt);
+
+                UserDetails userDetails = userEntityDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authToken);
+            }catch (JWTVerificationException | UsernameNotFoundException ex) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Invalid JWT Token");
+                return;
+            }
+        }
+        filterChain.doFilter(request,response);
+
+    }
+
+}
