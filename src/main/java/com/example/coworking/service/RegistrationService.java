@@ -1,5 +1,6 @@
 package com.example.coworking.service;
 
+import com.example.coworking.entity.UserCredentialsEntity;
 import com.example.coworking.entity.UserEntity;
 import com.example.coworking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,14 @@ public class RegistrationService {
     }
 
     @Transactional
-    public void register(UserEntity user){
-        String rawPassword=user.getCredentials().getPasswordHash();
-        String encodedPassword=passwordEncoder.encode(rawPassword);
-        user.getCredentials().setPasswordHash(encodedPassword);
+    public void register(UserEntity user,String password){
+        String encodedPassword=passwordEncoder.encode(password);
+        UserCredentialsEntity credentials=new UserCredentialsEntity();
+        credentials.setPasswordHash(encodedPassword);
+
+        credentials.setUser(user);
+        user.setCredentials(credentials);
+
         user.setRole("USER");
         userRepository.save(user);
     }

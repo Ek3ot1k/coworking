@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @Slf4j
 public class AuthController {
 
@@ -35,7 +35,6 @@ public class AuthController {
     private final UserValidator userValidator;
     private final RegistrationService registrationService;
 
-    @Autowired
     public AuthController(AuthenticationManager authenticationManager,
                           JWTUtil jWTUtil,
                           ModelMapper modelMapper,
@@ -83,7 +82,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message","Ошибка валидации: "+errors));
         }
 
-        registrationService.register(user);
+        registrationService.register(user,userDTO.password());
         String token=jWTUtil.generateToken(user.getEmail());
         return ResponseEntity.ok(Map.of("jwt-token",token));
     }
@@ -102,7 +101,13 @@ public class AuthController {
     }
 
     private UserEntity convertToUser(UserDTO userDTO) {
-        return modelMapper.map(userDTO, UserEntity.class);
+        UserEntity user = new UserEntity();
+        // Используем методы рекорда для получения данных
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        user.setEmail(userDTO.email());
+        // Пароль мы сюда не кладем, так как он передается в сервис отдельно
+        return user;
     }
 }
 
