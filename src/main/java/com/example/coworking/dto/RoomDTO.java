@@ -1,4 +1,4 @@
 package com.example.coworking.dto;
 
-public class RoomDTO {
+public record RoomDTO(String name,int capacity,boolean isActive) {
 }
