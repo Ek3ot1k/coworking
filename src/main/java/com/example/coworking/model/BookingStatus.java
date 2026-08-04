@@ -1,5 +1,5 @@
 package com.example.coworking.model;
 
 public enum BookingStatus {
-    PENDING_PAYMENT,CANCELLED
+    PENDING_PAYMENT,CANCELLED,ACTIVE
 }

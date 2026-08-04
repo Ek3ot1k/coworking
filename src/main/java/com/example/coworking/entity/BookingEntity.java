@@ -33,6 +33,8 @@ public class BookingEntity {
     private RoomEntity room;
 
     @Type(PostgreSQLRangeType.class)
+    @Getter
+    @Setter
     @Column(name = "booking_period",columnDefinition = "tstzrange",nullable = false)
     private Range<ZonedDateTime> bookingPeriod;
 

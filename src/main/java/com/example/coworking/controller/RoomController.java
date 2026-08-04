@@ -2,6 +2,7 @@ package com.example.coworking.controller;
 
 import com.example.coworking.dto.RoomDTO;
 import com.example.coworking.entity.RoomEntity;
+import com.example.coworking.exceptions.ResourceNotFoundException;
 import com.example.coworking.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,14 @@ public class RoomController {
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id){
         roomService.deleteRoom(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RoomDTO> updateRoom(@PathVariable("id") Long id,
+                                              @RequestBody RoomDTO roomDTO){
+        RoomEntity room=roomService.updateRoom(id,roomDTO);
+        RoomDTO dto=convertToRoomDTO(room);
+        return ResponseEntity.ok(dto);
     }
 
 
