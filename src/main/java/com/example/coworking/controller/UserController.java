@@ -8,6 +8,8 @@ import org.springframework.boot.Banner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -24,11 +26,14 @@ public class UserController {
         return convertToUserDTO(userService.findById(id));
     }
 
-    private UserDTO convertToUserDTO(UserEntity user){
-        return modelMapper.map(user, UserDTO.class);
+    @GetMapping("/me")
+    public UserDTO getMyProfile(Principal principal){
+        String email=principal.getName();
+        UserEntity currentUser=userService.findByEmail(email);
+        return convertToUserDTO(currentUser);
     }
 
-    private UserEntity convertToUser(UserDTO userDTO){
-        return modelMapper.map(userDTO, UserEntity.class);
+    private UserDTO convertToUserDTO(UserEntity user){
+        return modelMapper.map(user, UserDTO.class);
     }
 }

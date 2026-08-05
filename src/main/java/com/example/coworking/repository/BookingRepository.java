@@ -17,7 +17,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity,Long> {
         from bookings b 
         where b.room_id=:roomId
           and b.status='ACTIVE'
-          and b.booking_time && cast(:timeRange as tstzrange)
+          and b.booking_period && cast(:timeRange as tstzrange)
     """,nativeQuery = true)
     boolean isRoomBusy(@Param("roomId") Long roomId,
                    @Param("timeRange") String timeRange);

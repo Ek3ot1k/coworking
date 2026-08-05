@@ -87,18 +87,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("jwt-token",token));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNotReadable(Exception e) {
-        return Map.of("error", "Invalid JSON: " + e.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidation(MethodArgumentNotValidException e) {
-        return e.getBindingResult().getFieldErrors().stream()
-                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-    }
 
     private UserEntity convertToUser(UserDTO userDTO) {
         UserEntity user = new UserEntity();

@@ -1,0 +1,50 @@
+### 1. Регистрация нового пользователя
+POST http://localhost:8080/api/auth/registration
+Content-Type: application/json
+
+{
+  "firstName": "amin",
+  "lastName": "khuseynov",
+  "email": "amin2005@gmail.com",
+  "password": "my_secure_password"
+}
+
+### 2. Логин (скрипт автоматически сохранит токен в память IDEA)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "amin2005@gmail.com",
+  "password": "retupole"
+}
+
+> {%
+    client.global.set("auth_token", response.body["jwt-token"]);
+%}
+
+### 3. Создание новой комнаты (ведь комнат в базе тоже еще нет)
+POST http://localhost:8080/api/rooms
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "name": "Логово Черепашек",
+  "capacity": 6,
+  "isActive": true
+}
+
+### 4. Просмотр списка всех комнат (тот самый запрос, который падал)
+GET http://localhost:8080/api/rooms
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### 5. Бронирование созданной комнаты
+POST http://localhost:8080/api/bookings
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "roomId": 2,
+  "startTime": "2026-08-05T10:00:00+03:00",
+  "endTime": "2026-08-05T12:00:00+03:00"
+}

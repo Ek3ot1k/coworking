@@ -1,6 +1,7 @@
 package com.example.coworking.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,8 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "rooms")
+@Getter
+@Setter
 public class RoomEntity {
 
     @Id
@@ -16,28 +19,18 @@ public class RoomEntity {
     @Column(name = "id")
     private Long id;
 
-    @Getter
-    @Setter
     @Column(name = "name")
     private String name;
 
-    @Getter
-    @Setter
     @Column(name = "capacity")
     private int capacity;
 
-    @Getter
-    @Setter
     @Column(name = "is_active")
     private boolean isActive;
 
-    @Getter
     @Column(name = "created_at")
     @CreationTimestamp
+    @Setter(AccessLevel.NONE)
     private OffsetDateTime createdAt;
-
-    public long getId() {
-        return id;
-    }
 
 }

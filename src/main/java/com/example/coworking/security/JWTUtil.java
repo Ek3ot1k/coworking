@@ -33,6 +33,6 @@ public class JWTUtil {
                 .build();
 
         DecodedJWT jwt=verifier.verify(token);
-        return jwt.getClaim("username").asString();
+        return jwt.getClaim("email").asString();
     }
 }

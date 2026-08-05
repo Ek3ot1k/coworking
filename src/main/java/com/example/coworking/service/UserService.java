@@ -18,4 +18,9 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Пользователь с id="+id+" не найден"));
     }
+
+    public UserEntity findByEmail(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь не найден"));
+    }
 }

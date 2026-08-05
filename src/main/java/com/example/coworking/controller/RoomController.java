@@ -62,11 +62,19 @@ public class RoomController {
     }
 
 
-    public RoomEntity convertToRoomEntity(RoomDTO roomDTO){
-        return modelMapper.map(roomDTO,RoomEntity.class);
+    public RoomEntity convertToRoomEntity(RoomDTO roomDTO) {
+        RoomEntity room = new RoomEntity();
+        room.setName(roomDTO.name());
+        room.setCapacity(roomDTO.capacity());
+        room.setActive(roomDTO.isActive());
+        return room;
     }
 
-    public RoomDTO convertToRoomDTO(RoomEntity room){
-        return modelMapper.map(room,RoomDTO.class);
+    public RoomDTO convertToRoomDTO(RoomEntity room) {
+        return new RoomDTO(
+                room.getName(),
+                room.getCapacity(),
+                room.isActive()
+        );
     }
 }
