@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity,Long> {
     List<BookingEntity> findBookingsByUserEmail(String email);
+    List<BookingEntity> findBookingsByUserId(Long id);
     List<BookingEntity> findBookingsByRoomId(Long roomId);
     @Query(value = """
         SELECT count (b.id)>0
@@ -21,4 +22,5 @@ public interface BookingRepository extends JpaRepository<BookingEntity,Long> {
     """,nativeQuery = true)
     boolean isRoomBusy(@Param("roomId") Long roomId,
                    @Param("timeRange") String timeRange);
+
 }

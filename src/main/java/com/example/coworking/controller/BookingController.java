@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/bookings")
+@RequestMapping("/api/v1/bookings")
 public class BookingController {
 
     private final BookingService bookingService;

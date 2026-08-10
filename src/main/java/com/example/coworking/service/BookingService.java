@@ -44,6 +44,10 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
+    public List<BookingEntity> findBookingsByUserId(Long id){
+        return bookingRepository.findBookingsByUserId(id);
+    }
+
     public void delete(Long id){
         bookingRepository.deleteById(id);
     }

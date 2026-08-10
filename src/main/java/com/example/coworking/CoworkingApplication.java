@@ -12,9 +12,4 @@ public class CoworkingApplication {
 		SpringApplication.run(CoworkingApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
-	}
-
 }

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/rooms")
+@RequestMapping("/api/v1/rooms")
 public class RoomController {
 
     private final ModelMapper modelMapper;

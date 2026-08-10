@@ -13,8 +13,7 @@
 * **BookingService:** Выброс `ResourceNotFoundException`, если передан неверный ID комнаты или пользователя.
 * **BookingService:** Успешная отмена брони (смена статуса на `CANCELLED`).
 
----ЗДЕСЬ--- * **RegistrationService:** Проверка, что сырой пароль шифруется через `PasswordEncoder` перед сохранением.
-* **RegistrationService:** Проверка правильной привязки `UserCredentialsEntity` к `UserEntity`.
+* **RegistrationService:** Проверка, что сырой пароль шифруется через `PasswordEncoder` перед сохранением.
 * **UserEntityDetailsService:** Успешный поиск пользователя и формирование объекта `UserDetails`.
 * **UserEntityDetailsService:** Выброс `UsernameNotFoundException`, если email нет в базе.
 * **UserValidator:** Ошибка валидации, если пользователь с таким email уже существует.
@@ -26,7 +25,7 @@
 
 Здесь используется `@WebMvcTest`. Мы проверяем, что контроллеры правильно принимают JSON, реагируют на невалидные данные и отдают нужные HTTP-статусы.
 
-* **AuthController:** Успешная регистрация возвращает статус 200 и токен.
+---ЗДЕСЬ---* **AuthController:** Успешная регистрация возвращает статус 200 и токен.
 * **AuthController:** Регистрация с невалидным JSON (например, пустой email) возвращает статус 400 Bad Request.
 * **AuthController:** Логин с неправильным паролем возвращает статус 401 Unauthorized.
 * **BookingController:** Создание брони авторизованным пользователем возвращает статус 201 Created.
