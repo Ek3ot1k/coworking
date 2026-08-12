@@ -1,6 +1,7 @@
 package com.example.coworking.controller;
 
 import com.example.coworking.dto.BookingDTO;
+import com.example.coworking.dto.BookingRequestDTO;
 import com.example.coworking.dto.RoomDTO;
 import com.example.coworking.entity.BookingEntity;
 import com.example.coworking.entity.RoomEntity;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/bookings")
+@CrossOrigin(origins = "*")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -42,12 +44,12 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<BookingDTO> addBooking(@Valid @RequestBody BookingDTO bookingDTO,
+    public ResponseEntity<BookingDTO> addBooking(@Valid @RequestBody BookingRequestDTO requestDTO,
                                                  Principal principal){
-        String userEmail=principal.getName();
-        BookingEntity savedBooking=bookingService.createBooking(bookingDTO,userEmail);
-        BookingDTO dto=convertToBookingDTO(savedBooking);
-        log.info("Бронь с id={} добавлена в базу",savedBooking.getId());
+        String userEmail = principal.getName();
+        BookingEntity savedBooking = bookingService.createBooking(requestDTO, userEmail);
+        BookingDTO dto = convertToBookingDTO(savedBooking);
+        log.info("Бронь с id={} добавлена в базу", savedBooking.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

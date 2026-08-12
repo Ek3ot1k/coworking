@@ -7,8 +7,6 @@ import com.example.coworking.entity.UserEntity;
 import com.example.coworking.service.BookingService;
 import com.example.coworking.service.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.Banner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,6 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
@@ -50,7 +49,13 @@ public class UserController {
     }
 
     private UserDTO convertToUserDTO(UserEntity user){
-        return modelMapper.map(user, UserDTO.class);
+        // Мапим вручную, так как UserDTO — это record (без пустого конструктора)
+        return new UserDTO(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                null // пароль наружу отдавать не нужно, поэтому передаем null
+        );
     }
 
     private BookingDTO convertToBookingDTO(BookingEntity booking) {

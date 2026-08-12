@@ -1,6 +1,7 @@
 package com.example.coworking.service;
 
 import com.example.coworking.dto.BookingDTO;
+import com.example.coworking.dto.BookingRequestDTO;
 import com.example.coworking.entity.BookingEntity;
 import com.example.coworking.entity.RoomEntity;
 import com.example.coworking.entity.UserEntity;
@@ -54,9 +55,15 @@ public class BookingService {
 
     @Transactional
     public BookingEntity cancel(Long id){
-        BookingEntity booking=bookingRepository
-                .findById(id).orElseThrow(()->new ResourceNotFoundException("Бронь не найдена"));
+        BookingEntity booking = bookingRepository
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Бронь не найдена"));
         booking.setStatus(BookingStatus.CANCELLED);
+
+        // ВОЗВРАЩАЕМ КОМНАТЕ СТАТУС ДОСТУПНА ПРИ ОТМЕНЕ БРОНИ
+        RoomEntity room = booking.getRoom();
+        room.setActive(true);
+        roomRepository.save(room);
+
         return booking;
     }
 
@@ -69,26 +76,31 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingEntity createBooking(BookingDTO dto,String userEmail){
-        UserEntity user=userRepository.findByEmail(userEmail)
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь не найден"));
+    public BookingEntity createBooking(BookingRequestDTO dto, String userEmail){
+        UserEntity user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь не найден"));
 
-        RoomEntity room=roomRepository.findById(dto.roomId())
+        RoomEntity room = roomRepository.findById(dto.roomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Комната с ID " +
                         dto.roomId() + " не найдена"));
 
-        Range<ZonedDateTime> timeRange=Range.closedOpen(dto.startTime(),dto.endTime());
+        Range<ZonedDateTime> timeRange = Range.closedOpen(dto.startTime(), dto.endTime());
 
-        boolean isBusy=bookingRepository.isRoomBusy(room.getId(),timeRange.asString());
+        boolean isBusy = bookingRepository.isRoomBusy(room.getId(), timeRange.asString());
         if(isBusy){
             throw new IllegalStateException("Комната уже занята на выбранное время");
         }
 
+        // 1. Создаем бронь
         BookingEntity booking = new BookingEntity();
         booking.setUser(user);
         booking.setRoom(room);
         booking.setBookingPeriod(timeRange);
         booking.setStatus(BookingStatus.ACTIVE);
+
+        // 2. ДЕЛАЕМ КОМНАТУ НЕДОСТУПНОЙ (ВЫКЛЮЧАЕМ РУБИЛЬНИК)
+        room.setActive(false);
+        roomRepository.save(room);
 
         return bookingRepository.save(booking);
     }

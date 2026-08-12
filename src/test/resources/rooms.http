@@ -18,10 +18,16 @@ DELETE http://localhost:8080/api/v1/rooms/{{id}}
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-### Изменить комнату
-PUT http://localhost:8080/api/v1/rooms/{{id}}
-Authorization: Bearer {{auth_token}}
+### Обновление комнаты с ID 2
+PUT http://localhost:8080/api/v1/rooms/2
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Матрица",
+  "capacity": 10,
+  "isActive": true
+}
 
 ### Получить бронирования комнаты
 GET http://localhost:8080/api/v1/rooms/{{roomId}}/bookings

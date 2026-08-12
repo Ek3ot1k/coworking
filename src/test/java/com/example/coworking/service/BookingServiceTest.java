@@ -1,7 +1,6 @@
 package com.example.coworking.service;
 
-import com.example.coworking.dto.BookingDTO;
-import com.example.coworking.dto.RoomDTO;
+import com.example.coworking.dto.BookingRequestDTO;
 import com.example.coworking.entity.BookingEntity;
 import com.example.coworking.entity.RoomEntity;
 import com.example.coworking.entity.UserEntity;
@@ -10,6 +9,7 @@ import com.example.coworking.model.BookingStatus;
 import com.example.coworking.repository.BookingRepository;
 import com.example.coworking.repository.RoomRepository;
 import com.example.coworking.repository.UserRepository;
+import io.hypersistence.utils.hibernate.type.range.Range;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -41,73 +41,78 @@ public class BookingServiceTest {
 
     @Test
     void createBooking_WhenRoomIsFree_ShouldSaveAndReturnBooking(){
-        String userEmail="test@test.com";
-        Long roomId=1L;
+        String userEmail = "test@test.com";
+        Long roomId = 1L;
 
-        UserEntity fakeUser=new UserEntity();
-        RoomEntity fakeRoom=new RoomEntity();
-
-        ZonedDateTime startTime=ZonedDateTime.now().plusDays(1).withHour(10);
-        ZonedDateTime endTime=startTime.plusHours(2);
-        BookingDTO dto=new BookingDTO(null,roomId,null,startTime,endTime,null);
-
-        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(fakeUser));
-        when(roomRepository.findById(roomId)).thenReturn(Optional.of(fakeRoom));
-
-        when(bookingRepository.isRoomBusy(eq(fakeRoom.getId()),anyString())).thenReturn(false);
-
-        when(bookingRepository.save(any(BookingEntity.class))).thenReturn(new BookingEntity());
-
-        BookingEntity result=bookingService.createBooking(dto,userEmail);
-
-        assertNotNull(result);
-
-        verify(bookingRepository).save(any(BookingEntity.class));
-
-        verify(bookingRepository).isRoomBusy(eq(fakeRoom.getId()),anyString());
-    }
-
-    @Test
-    void throw_IllegalStateException(){
-        String userEmail="test@test.com";
-        Long roomId=1L;
-
-        RoomEntity fakeRoom=new RoomEntity();
-        UserEntity fakeUser=new UserEntity();
+        UserEntity fakeUser = new UserEntity();
+        RoomEntity fakeRoom = new RoomEntity();
         fakeRoom.setId(roomId);
 
         ZonedDateTime startTime = ZonedDateTime.now().plusDays(1).withHour(10);
         ZonedDateTime endTime = startTime.plusHours(2);
-        BookingDTO dto=new BookingDTO(null,roomId,null,startTime,endTime,null);
+
+        // Используем BookingRequestDTO вместо BookingDTO
+        BookingRequestDTO requestDTO = new BookingRequestDTO(roomId, startTime, endTime);
 
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(fakeUser));
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(fakeRoom));
-        when(bookingRepository.isRoomBusy(eq(fakeRoom.getId()),anyString())).thenReturn(true);
+        when(bookingRepository.isRoomBusy(eq(fakeRoom.getId()), anyString())).thenReturn(false);
+        when(bookingRepository.save(any(BookingEntity.class))).thenReturn(new BookingEntity());
 
-        Executable action=()->bookingService.createBooking(dto,userEmail);
-        IllegalStateException exception=assertThrows(IllegalStateException.class,action);
+        BookingEntity result = bookingService.createBooking(requestDTO, userEmail);
+
+        assertNotNull(result);
+        verify(bookingRepository).save(any(BookingEntity.class));
+        verify(bookingRepository).isRoomBusy(eq(fakeRoom.getId()), anyString());
+    }
+
+    @Test
+    void throw_IllegalStateException(){
+        String userEmail = "test@test.com";
+        Long roomId = 1L;
+
+        RoomEntity fakeRoom = new RoomEntity();
+        UserEntity fakeUser = new UserEntity();
+        fakeRoom.setId(roomId);
+
+        ZonedDateTime startTime = ZonedDateTime.now().plusDays(1).withHour(10);
+        ZonedDateTime endTime = startTime.plusHours(2);
+
+        BookingRequestDTO requestDTO = new BookingRequestDTO(roomId, startTime, endTime);
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(fakeUser));
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(fakeRoom));
+        when(bookingRepository.isRoomBusy(eq(fakeRoom.getId()), anyString())).thenReturn(true);
+
+        Executable action = () -> bookingService.createBooking(requestDTO, userEmail);
+        IllegalStateException exception = assertThrows(IllegalStateException.class, action);
         assertEquals("Комната уже занята на выбранное время", exception.getMessage());
-        verify(bookingRepository,never()).save(any(BookingEntity.class));
+        verify(bookingRepository, never()).save(any(BookingEntity.class));
     }
 
     @Test
     void throw_ResourceNotFoundException(){
-        String userEmail="ghost@test.com";
-        Long roomId=1L;
+        String userEmail = "ghost@test.com";
+        Long roomId = 1L;
 
-        BookingDTO dto=new BookingDTO(null,roomId,null,
-                ZonedDateTime.now(),ZonedDateTime.now().withHour(1),null);
+        BookingRequestDTO requestDTO = new BookingRequestDTO(
+                roomId,
+                ZonedDateTime.now(),
+                ZonedDateTime.now().withHour(1)
+        );
+
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
-        Executable action=()->bookingService.createBooking(dto,userEmail);
-        assertThrows(ResourceNotFoundException.class,action);
-        verify(bookingRepository,never()).save(any(BookingEntity.class));
+
+        Executable action = () -> bookingService.createBooking(requestDTO, userEmail);
+        assertThrows(ResourceNotFoundException.class, action);
+        verify(bookingRepository, never()).save(any(BookingEntity.class));
     }
 
     @Test
     void change_status_to_cancelled(){
-        Long bookingId=99L;
+        Long bookingId = 99L;
 
-        BookingEntity fakeBooking=new BookingEntity();
+        BookingEntity fakeBooking = new BookingEntity();
         fakeBooking.setId(bookingId);
         fakeBooking.setStatus(BookingStatus.ACTIVE);
 
@@ -115,15 +120,6 @@ public class BookingServiceTest {
 
         bookingService.cancel(bookingId);
 
-        assertEquals(fakeBooking.getStatus(),BookingStatus.CANCELLED);
+        assertEquals(fakeBooking.getStatus(), BookingStatus.CANCELLED);
     }
-
 }
-
-
-
-
-
-
-
-

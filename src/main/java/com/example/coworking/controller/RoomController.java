@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/rooms")
+@CrossOrigin(origins = "*")
 public class RoomController {
 
     private final ModelMapper modelMapper;
