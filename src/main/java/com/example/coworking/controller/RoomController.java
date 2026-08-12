@@ -1,8 +1,11 @@
 package com.example.coworking.controller;
 
+import com.example.coworking.dto.BookingDTO;
 import com.example.coworking.dto.RoomDTO;
+import com.example.coworking.entity.BookingEntity;
 import com.example.coworking.entity.RoomEntity;
 import com.example.coworking.exceptions.ResourceNotFoundException;
+import com.example.coworking.service.BookingService;
 import com.example.coworking.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +24,12 @@ public class RoomController {
 
     private final ModelMapper modelMapper;
     private final RoomService roomService;
+    private final BookingService bookingService;
 
-    public RoomController(ModelMapper modelMapper, RoomService roomService) {
+    public RoomController(ModelMapper modelMapper, RoomService roomService, BookingService bookingService) {
         this.modelMapper = modelMapper;
         this.roomService = roomService;
+        this.bookingService = bookingService;
     }
 
     @GetMapping()
@@ -61,6 +66,12 @@ public class RoomController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/{roomId}/bookings")
+    public List<BookingDTO> getBookingsByRoom(@PathVariable("roomId") Long roomId){
+        return bookingService.findBookingsByRoomId(roomId).stream()
+                .map(this::convertToBookingDTO).collect(Collectors.toList());
+    }
+
 
     public RoomEntity convertToRoomEntity(RoomDTO roomDTO) {
         RoomEntity room = new RoomEntity();
@@ -75,6 +86,17 @@ public class RoomController {
                 room.getName(),
                 room.getCapacity(),
                 room.isActive()
+        );
+    }
+
+    public BookingDTO convertToBookingDTO(BookingEntity booking){
+        return new BookingDTO(
+                booking.getId(),
+                booking.getRoom().getId(),
+                booking.getUser().getId(),
+                booking.getBookingPeriod().lower(), // достаем время начала из Range
+                booking.getBookingPeriod().upper(), // достаем время окончания из Range
+                booking.getStatus()
         );
     }
 }

@@ -1,0 +1,24 @@
+### Регистрация нового пользователя
+POST http://localhost:8080/api/v1/auth/registration
+Content-Type: application/json
+
+{
+  "firstName": "zamin",
+  "lastName": "khuseynov",
+  "email": "zamin2007@gmail.com",
+  "password": "my_secure_password"
+}
+
+### Логин (скрипт автоматически сохранит токен в память IDEA)
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "zamin2007@gmail.com",
+  "password": "my_secure_password"
+}
+
+> {%
+    client.global.set("auth_token", response.body["jwt-token"]);
+%}
+

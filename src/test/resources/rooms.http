@@ -1,0 +1,29 @@
+### Получение списка всех комнат
+GET http://localhost:8080/api/v1/rooms
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Получение комнаты по id
+GET http://localhost:8080/api/v1/rooms/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Добавление комнаты
+POST http://localhost:8080/api/v1/rooms
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Удалить комнату
+DELETE http://localhost:8080/api/v1/rooms/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Изменить комнату
+PUT http://localhost:8080/api/v1/rooms/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Получить бронирования комнаты
+GET http://localhost:8080/api/v1/rooms/{{roomId}}/bookings
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json

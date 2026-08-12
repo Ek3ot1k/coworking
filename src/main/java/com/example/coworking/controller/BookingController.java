@@ -57,7 +57,7 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/cancel/{id}")
+    @PatchMapping("/cancel/{id}")
     public ResponseEntity<BookingDTO> cancelBooking(@PathVariable("id") Long id){
         BookingEntity booking =bookingService.cancel(id);
         return ResponseEntity.ok(convertToBookingDTO(booking));
@@ -68,12 +68,6 @@ public class BookingController {
         String userEmail=principal.getName();
         return bookingService.findBookingsByUserEmail(userEmail)
                 .stream().map(this::convertToBookingDTO).collect(Collectors.toList());
-    }
-
-    @GetMapping("/room/{roomId}")
-    public List<BookingDTO> getBookingsByRoom(@PathVariable("roomId") Long roomId){
-        return bookingService.findBookingsByRoomId(roomId).stream()
-                .map(this::convertToBookingDTO).collect(Collectors.toList());
     }
 
 

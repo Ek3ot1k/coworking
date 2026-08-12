@@ -1,0 +1,51 @@
+### Создание новой комнаты (ведь комнат в базе тоже еще нет)
+POST http://localhost:8080/api/v1/rooms
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "name": "Логово Черепашек",
+  "capacity": 6,
+  "isActive": true
+}
+
+### Просмотр списка всех комнат
+GET http://localhost:8080/api/v1/rooms
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### Бронирование созданной комнаты
+POST http://localhost:8080/api/v1/bookings
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "roomId": 2,
+  "startTime": "2026-08-05T10:00:00+03:00",
+  "endTime": "2026-08-05T12:00:00+03:00"
+}
+
+### Получение списка всех бронирований
+GET http://localhost:8080/api/v1/bookings
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Получение бронирования по id
+GET http://localhost:8080/api/v1/bookings/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Удаление бронирования
+DELETE http://localhost:8080/api/v1/bookings/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Отмена бронирования
+PATCH http://localhost:8080/api/v1/bookings/cancel/{{id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### Получение бронирований пользователя
+GET http://localhost:8080/api/v1/bookings/my
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
